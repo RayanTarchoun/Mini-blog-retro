@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NES Blog{% endblock %}</title>
+
+    {# NES.css #}
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    {# Press Start 2P font (pixel font) #}
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        body {
+            background-color: #212529;
+            color: #f8f9fa;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        a {
+            color: #92cc41;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #76c442;
+            text-decoration: underline;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1a1a2e;
+            border-bottom: 4px solid #e76e55;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .navbar-brand {
+            color: #e76e55 !important;
+            font-size: 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand i {
+            margin-right: 4px;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .navbar-links a {
+            color: #f8f9fa;
+            font-size: 10px;
+            padding: 4px 8px;
+        }
+
+        .navbar-links a:hover {
+            color: #92cc41;
+        }
+
+        /* Main content */
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        /* NES containers dark mode */
+        .nes-container {
+            background-color: #2a2a3e !important;
+            color: #f8f9fa !important;
+        }
+
+        .nes-container.is-dark {
+            background-color: #1a1a2e !important;
+            border-color: #f8f9fa !important;
+        }
+
+        .nes-container.with-title > .title {
+            background-color: #2a2a3e !important;
+            color: #e76e55 !important;
+        }
+
+        .nes-container.is-dark.with-title > .title {
+            background-color: #1a1a2e !important;
+        }
+
+        /* Cards */
+        .post-card {
+            margin-bottom: 24px;
+            transition: transform 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .post-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            image-rendering: auto;
+            border: 4px solid #f8f9fa;
+            margin-bottom: 12px;
+        }
+
+        .post-card .post-title {
+            color: #92cc41;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .post-card .post-meta {
+            font-size: 8px;
+            color: #adb5bd;
+            margin-bottom: 8px;
+        }
+
+        .post-card .post-excerpt {
+            font-size: 10px;
+            line-height: 1.8;
+            color: #dee2e6;
+        }
+
+        /* Grid layout */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        /* Buttons override */
+        .nes-btn {
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* Forms */
+        .nes-input, .nes-textarea, .nes-select {
+            background-color: #1a1a2e !important;
+            color: #f8f9fa !important;
+            font-family: 'Press Start 2P', cursive !important;
+            font-size: 10px !important;
+        }
+
+        .nes-input::placeholder, .nes-textarea::placeholder {
+            color: #6c757d !important;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #92cc41;
+            font-size: 10px;
+        }
+
+        /* Flash messages */
+        .flash-success {
+            border-color: #92cc41;
+        }
+
+        .flash-error {
+            border-color: #e76e55;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            border-top: 4px solid #e76e55;
+            background-color: #1a1a2e;
+            margin-top: 48px;
+            font-size: 10px;
+            color: #adb5bd;
+        }
+
+        /* Badge */
+        .badge-admin {
+            color: #e76e55;
+            font-size: 8px;
+        }
+
+        .badge-user {
+            color: #92cc41;
+            font-size: 8px;
+        }
+
+        .badge-pending {
+            color: #f7d51d;
+            font-size: 8px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 16px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            color: #e76e55;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 8px;
+            color: #adb5bd;
+        }
+
+        /* Comment section */
+        .comment-item {
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 2px solid #4a4a5e;
+        }
+
+        .comment-meta {
+            font-size: 8px;
+            color: #adb5bd;
+            margin-bottom: 8px;
+        }
+
+        .comment-content {
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+        /* Tables */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid #4a4a5e;
+        }
+
+        .admin-table th {
+            color: #92cc41;
+            font-size: 9px;
+        }
+
+        /* Category filter */
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .admin-table {
+                font-size: 7px;
+            }
+
+            .admin-table th, .admin-table td {
+                padding: 6px;
+            }
+        }
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    {# ===== NAVBAR ===== #}
+    <nav class="navbar">
+        <a href="{{ path('app_home') }}" class="navbar-brand">
+            <i class="nes-icon trophy is-small"></i>
+            NES Blog
+        </a>
+        <div class="navbar-links">
+            <a href="{{ path('app_home') }}">
+                <i class="nes-icon home is-small"></i> Accueil
+            </a>
+            <a href="{{ path('app_post_index') }}">
+                <i class="nes-icon star is-small"></i> Articles
+            </a>
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_dashboard') }}" style="color: #e76e55;">
+                    <i class="nes-icon coin is-small"></i> Admin
+                </a>
+            {% endif %}
+
+            {% if app.user %}
+                <a href="{{ path('app_profile') }}">
+                    <i class="nes-icon heart is-small"></i> Profil
+                </a>
+                <a href="{{ path('app_logout') }}" style="color: #e76e55;">
+                    Déconnexion
+                </a>
+                <span style="color: #92cc41; font-size: 9px;">
+                    {{ app.user.firstName }}
+                </span>
+            {% else %}
+                <a href="{{ path('app_login') }}">Connexion</a>
+                <a href="{{ path('app_register') }}">Inscription</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {# ===== FLASH MESSAGES ===== #}
+    <div class="main-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="nes-container is-rounded flash-{{ label }}" style="margin-bottom: 16px; font-size: 10px;">
+                    {% if label == 'success' %}
+                        <i class="nes-icon like is-small"></i>
+                    {% elseif label == 'error' %}
+                        <i class="nes-icon close is-small"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# ===== MAIN CONTENT ===== #}
+        {% block body %}{% endblock %}
+    </div>
+
+    {# ===== FOOTER ===== #}
+    <footer class="footer">
+        <p>
+            <i class="nes-icon heart is-small"></i>
+            NES Blog &copy; {{ "now"|date("Y") }} — Fait avec Symfony &amp; NES.css
+            <i class="nes-icon heart is-small"></i>
+        </p>
+        <p style="margin-top: 8px; font-size: 8px;">
+            <i class="nes-icon github is-small"></i>
+            Projet IPSSI — PHP Symfony
+        </p>
+    </footer>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

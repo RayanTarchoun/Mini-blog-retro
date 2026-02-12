@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs - Admin{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Gestion des utilisateurs</p>
+
+        <div style="margin-bottom: 16px;">
+            <a href="{{ path('app_admin_dashboard') }}" class="nes-btn" style="font-size: 9px;">
+                &larr; Dashboard
+            </a>
+        </div>
+
+        {% if users is empty %}
+            <p style="font-size: 10px;">Aucun utilisateur inscrit.</p>
+        {% else %}
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Inscrit le</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.fullName }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if 'ROLE_ADMIN' in user.roles %}
+                                        <span class="badge-admin">★ Admin</span>
+                                    {% else %}
+                                        <span class="badge-user">● User</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.isActive %}
+                                        <span style="color: #92cc41;">Actif</span>
+                                    {% else %}
+                                        <span style="color: #e76e55;">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.createdAt|date('d/m/Y') }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                        {# Toggle active/inactive #}
+                                        <form method="post" action="{{ path('app_admin_user_toggle', {id: user.id}) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+                                            {% if user.isActive %}
+                                                <button class="nes-btn is-error" style="font-size: 7px; padding: 4px 6px;">
+                                                    Désactiver
+                                                </button>
+                                            {% else %}
+                                                <button class="nes-btn is-success" style="font-size: 7px; padding: 4px 6px;">
+                                                    Activer
+                                                </button>
+                                            {% endif %}
+                                        </form>
+
+                                        {# Promote/demote #}
+                                        <form method="post" action="{{ path('app_admin_user_promote', {id: user.id}) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('promote' ~ user.id) }}">
+                                            {% if 'ROLE_ADMIN' in user.roles %}
+                                                <button class="nes-btn is-warning" style="font-size: 7px; padding: 4px 6px;">
+                                                    Rétrograder
+                                                </button>
+                                            {% else %}
+                                                <button class="nes-btn is-primary" style="font-size: 7px; padding: 4px 6px;">
+                                                    Promouvoir
+                                                </button>
+                                            {% endif %}
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

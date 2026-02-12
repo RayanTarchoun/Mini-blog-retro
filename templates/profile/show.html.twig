@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - NES Blog{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div class="nes-container with-title" style="margin-bottom: 24px;">
+            <p class="title">Mon Profil</p>
+
+            <table class="admin-table">
+                <tr>
+                    <td style="color: #92cc41;">Prénom</td>
+                    <td>{{ user.firstName }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #92cc41;">Nom</td>
+                    <td>{{ user.lastName }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #92cc41;">Email</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #92cc41;">Rôle</td>
+                    <td>
+                        {% if 'ROLE_ADMIN' in user.roles %}
+                            <span class="badge-admin">★ Administrateur</span>
+                        {% else %}
+                            <span class="badge-user">● Utilisateur</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #92cc41;">Inscrit le</td>
+                    <td>{{ user.createdAt|date('d/m/Y') }}</td>
+                </tr>
+                <tr>
+                    <td style="color: #92cc41;">Commentaires</td>
+                    <td>{{ user.comments|length }}</td>
+                </tr>
+            </table>
+
+            <div style="margin-top: 20px;">
+                <a href="{{ path('app_profile_edit') }}" class="nes-btn is-warning">
+                    Modifier mon profil
+                </a>
+            </div>
+        </div>
+
+        {# Mes derniers commentaires #}
+        {% if user.comments is not empty %}
+            <div class="nes-container is-dark with-title">
+                <p class="title">Mes commentaires</p>
+                {% for comment in user.comments|slice(0, 5) %}
+                    <div class="comment-item">
+                        <div class="comment-meta">
+                            Sur <a href="{{ path('app_post_show', {id: comment.post.id}) }}" style="color: #92cc41;">
+                                {{ comment.post.title }}
+                            </a>
+                            &bull; {{ comment.createdAt|date('d/m/Y') }}
+                            &bull;
+                            {% if comment.status == 'approved' %}
+                                <span style="color: #92cc41;">✓ Approuvé</span>
+                            {% elseif comment.status == 'pending' %}
+                                <span style="color: #f7d51d;">⏳ En attente</span>
+                            {% else %}
+                                <span style="color: #e76e55;">✗ Rejeté</span>
+                            {% endif %}
+                        </div>
+                        <div class="comment-content">
+                            {{ comment.content|slice(0, 100) }}{% if comment.content|length > 100 %}...{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

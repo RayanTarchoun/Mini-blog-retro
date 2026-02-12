@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des articles - Admin{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Gestion des articles</p>
+
+        <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+            <a href="{{ path('app_admin_dashboard') }}" class="nes-btn" style="font-size: 9px;">
+                &larr; Dashboard
+            </a>
+            <a href="{{ path('app_post_new') }}" class="nes-btn is-success" style="font-size: 9px;">
+                + Nouvel article
+            </a>
+        </div>
+
+        {% if posts is empty %}
+            <p style="font-size: 10px;">Aucun article.</p>
+        {% else %}
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Titre</th>
+                            <th>Catégorie</th>
+                            <th>Auteur</th>
+                            <th>Date</th>
+                            <th>Commentaires</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>
+                                    <a href="{{ path('app_post_show', {id: post.id}) }}">
+                                        {{ post.title|slice(0, 25) }}{% if post.title|length > 25 %}...{% endif %}
+                                    </a>
+                                </td>
+                                <td>{{ post.category.name }}</td>
+                                <td>{{ post.author.firstName }}</td>
+                                <td>{{ post.publishedAt|date('d/m/Y') }}</td>
+                                <td>{{ post.comments|length }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 4px;">
+                                        <a href="{{ path('app_post_edit', {id: post.id}) }}" class="nes-btn is-warning" style="font-size: 7px; padding: 4px 6px;">
+                                            Edit
+                                        </a>
+                                        <form method="post" action="{{ path('app_post_delete', {id: post.id}) }}"
+                                              onsubmit="return confirm('Supprimer ?');" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                                            <button class="nes-btn is-error" style="font-size: 7px; padding: 4px 6px;">
+                                                Suppr.
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

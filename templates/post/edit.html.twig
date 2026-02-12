@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier : {{ post.title }} - NES Blog{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Modifier l'article</p>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.category) }}
+                {{ form_widget(form.category) }}
+                {{ form_errors(form.category) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.picture) }}
+                {{ form_widget(form.picture) }}
+                {{ form_errors(form.picture) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.content) }}
+                {{ form_widget(form.content) }}
+                {{ form_errors(form.content) }}
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="nes-btn is-warning">
+                    Sauvegarder
+                </button>
+                <a href="{{ path('app_post_show', {id: post.id}) }}" class="nes-btn">
+                    Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

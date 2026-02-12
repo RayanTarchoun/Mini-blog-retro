@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel article - NES Blog{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Nouvel article</p>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                {{ form_errors(form.title) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.category) }}
+                {{ form_widget(form.category) }}
+                {{ form_errors(form.category) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.picture) }}
+                {{ form_widget(form.picture) }}
+                {{ form_errors(form.picture) }}
+                <p style="font-size: 7px; color: #adb5bd; margin-top: 4px;">
+                    Astuce : utilise picsum.photos ou unsplash pour des images gratuites
+                </p>
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.content) }}
+                {{ form_widget(form.content) }}
+                {{ form_errors(form.content) }}
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="nes-btn is-success">
+                    Publier l'article
+                </button>
+                <a href="{{ path('app_post_index') }}" class="nes-btn">
+                    Annuler
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

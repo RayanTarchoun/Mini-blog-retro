@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des commentaires - Admin{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Gestion des commentaires</p>
+
+        <div style="margin-bottom: 16px;">
+            <a href="{{ path('app_admin_dashboard') }}" class="nes-btn" style="font-size: 9px;">
+                &larr; Dashboard
+            </a>
+        </div>
+
+        {% if comments is empty %}
+            <p style="font-size: 10px;">Aucun commentaire.</p>
+        {% else %}
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Auteur</th>
+                            <th>Article</th>
+                            <th>Contenu</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comment in comments %}
+                            <tr>
+                                <td>{{ comment.id }}</td>
+                                <td>{{ comment.author.fullName }}</td>
+                                <td>
+                                    <a href="{{ path('app_post_show', {id: comment.post.id}) }}">
+                                        {{ comment.post.title|slice(0, 20) }}...
+                                    </a>
+                                </td>
+                                <td>{{ comment.content|slice(0, 40) }}{% if comment.content|length > 40 %}...{% endif %}</td>
+                                <td>
+                                    {% if comment.status == 'approved' %}
+                                        <span style="color: #92cc41;">✓ Approuvé</span>
+                                    {% elseif comment.status == 'pending' %}
+                                        <span style="color: #f7d51d;">⏳ Attente</span>
+                                    {% else %}
+                                        <span style="color: #e76e55;">✗ Rejeté</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ comment.createdAt|date('d/m/Y') }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 3px; flex-wrap: wrap;">
+                                        {% if comment.status != 'approved' %}
+                                            <form method="post" action="{{ path('app_admin_comment_approve', {id: comment.id}) }}" style="display:inline;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ comment.id) }}">
+                                                <button class="nes-btn is-success" style="font-size: 6px; padding: 3px 5px;">✓</button>
+                                            </form>
+                                        {% endif %}
+                                        {% if comment.status != 'rejected' %}
+                                            <form method="post" action="{{ path('app_admin_comment_reject', {id: comment.id}) }}" style="display:inline;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ comment.id) }}">
+                                                <button class="nes-btn is-warning" style="font-size: 6px; padding: 3px 5px;">✗</button>
+                                            </form>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('app_admin_comment_delete', {id: comment.id}) }}"
+                                              onsubmit="return confirm('Supprimer ce commentaire ?');" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                                            <button class="nes-btn is-error" style="font-size: 6px; padding: 3px 5px;">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

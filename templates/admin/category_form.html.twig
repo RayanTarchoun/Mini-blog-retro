@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} - Admin{% endblock %}
+
+{% block body %}
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="nes-container with-title">
+            <p class="title">{{ title }}</p>
+
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name) }}
+                    {{ form_errors(form.name) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="nes-btn is-success">
+                        Sauvegarder
+                    </button>
+                    <a href="{{ path('app_admin_categories') }}" class="nes-btn">
+                        Annuler
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

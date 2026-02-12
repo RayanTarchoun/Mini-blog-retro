@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - NES Blog{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title" style="margin-bottom: 24px;">
+        <p class="title">Dashboard Admin</p>
+
+        {# Stats #}
+        <div class="stats-grid">
+            <div class="nes-container is-dark stat-box">
+                <span class="stat-number">{{ totalPosts }}</span>
+                <span class="stat-label">Articles</span>
+            </div>
+            <div class="nes-container is-dark stat-box">
+                <span class="stat-number">{{ totalUsers }}</span>
+                <span class="stat-label">Utilisateurs</span>
+            </div>
+            <div class="nes-container is-dark stat-box">
+                <span class="stat-number">{{ totalComments }}</span>
+                <span class="stat-label">Commentaires</span>
+            </div>
+            <div class="nes-container is-dark stat-box">
+                <span class="stat-number">{{ totalCategories }}</span>
+                <span class="stat-label">Catégories</span>
+            </div>
+        </div>
+
+        {# Navigation admin #}
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{{ path('app_admin_posts') }}" class="nes-btn is-primary">
+                Articles
+            </a>
+            <a href="{{ path('app_admin_users') }}" class="nes-btn is-success">
+                Utilisateurs
+            </a>
+            <a href="{{ path('app_admin_categories') }}" class="nes-btn is-warning">
+                Catégories
+            </a>
+            <a href="{{ path('app_admin_comments') }}" class="nes-btn">
+                Commentaires
+            </a>
+            <a href="{{ path('app_post_new') }}" class="nes-btn is-error">
+                + Nouvel article
+            </a>
+        </div>
+    </div>
+
+    {# Commentaires en attente #}
+    {% if pendingComments is not empty %}
+        <div class="nes-container is-dark with-title" style="margin-bottom: 24px;">
+            <p class="title">Commentaires en attente ({{ pendingComments|length }})</p>
+            {% for comment in pendingComments|slice(0, 5) %}
+                <div class="comment-item">
+                    <div class="comment-meta">
+                        <strong style="color: #92cc41;">{{ comment.author.fullName }}</strong>
+                        sur <em>{{ comment.post.title }}</em>
+                        &bull; {{ comment.createdAt|date('d/m/Y H:i') }}
+                    </div>
+                    <div class="comment-content" style="margin-bottom: 8px;">
+                        {{ comment.content|slice(0, 150) }}
+                    </div>
+                    <div style="display: flex; gap: 4px;">
+                        <form method="post" action="{{ path('app_admin_comment_approve', {id: comment.id}) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ comment.id) }}">
+                            <button class="nes-btn is-success" style="font-size: 8px;">✓ Approuver</button>
+                        </form>
+                        <form method="post" action="{{ path('app_admin_comment_reject', {id: comment.id}) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ comment.id) }}">
+                            <button class="nes-btn is-error" style="font-size: 8px;">✗ Rejeter</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Derniers articles #}
+    <div class="nes-container with-title">
+        <p class="title">Derniers articles</p>
+        {% if latestPosts is empty %}
+            <p style="font-size: 10px;">Aucun article.</p>
+        {% else %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Catégorie</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in latestPosts %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('app_post_show', {id: post.id}) }}">
+                                    {{ post.title|slice(0, 30) }}
+                                </a>
+                            </td>
+                            <td>{{ post.category.name }}</td>
+                            <td>{{ post.publishedAt|date('d/m/Y') }}</td>
+                            <td>
+                                <a href="{{ path('app_post_edit', {id: post.id}) }}" class="nes-btn is-warning" style="font-size: 7px; padding: 4px 8px;">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

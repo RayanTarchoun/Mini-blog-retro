@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - NES Blog{% endblock %}
+
+{% block body %}
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="nes-container is-dark with-title">
+            <p class="title">Connexion</p>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="nes-kirby"></i>
+            </div>
+
+            {% if error %}
+                <div class="nes-container is-rounded flash-error" style="margin-bottom: 16px; font-size: 10px;">
+                    <i class="nes-icon close is-small"></i>
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail"
+                           class="nes-input" placeholder="email@exemple.com" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input type="password" name="_password" id="inputPassword"
+                           class="nes-input" placeholder="Mot de passe" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="nes-btn is-primary" type="submit" style="width: 100%;">
+                    Se connecter
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 9px;">
+                <p>Pas encore de compte ?</p>
+                <a href="{{ path('app_register') }}" class="nes-btn is-success" style="margin-top: 8px; font-size: 9px;">
+                    Créer un compte
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

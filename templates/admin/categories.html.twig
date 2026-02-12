@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des catégories - Admin{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title">
+        <p class="title">Gestion des catégories</p>
+
+        <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+            <a href="{{ path('app_admin_dashboard') }}" class="nes-btn" style="font-size: 9px;">
+                &larr; Dashboard
+            </a>
+            <a href="{{ path('app_admin_category_new') }}" class="nes-btn is-success" style="font-size: 9px;">
+                + Nouvelle catégorie
+            </a>
+        </div>
+
+        {% if categories is empty %}
+            <p style="font-size: 10px;">Aucune catégorie.</p>
+        {% else %}
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Articles</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td>{{ category.id }}</td>
+                                <td style="color: #f7d51d;">{{ category.name }}</td>
+                                <td>{{ category.description|default('—')|slice(0, 40) }}</td>
+                                <td>{{ category.posts|length }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 4px;">
+                                        <a href="{{ path('app_admin_category_edit', {id: category.id}) }}" class="nes-btn is-warning" style="font-size: 7px; padding: 4px 6px;">
+                                            Edit
+                                        </a>
+                                        <form method="post" action="{{ path('app_admin_category_delete', {id: category.id}) }}"
+                                              onsubmit="return confirm('Supprimer cette catégorie ?');" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                                            <button class="nes-btn is-error" style="font-size: 7px; padding: 4px 6px;">
+                                                Suppr.
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

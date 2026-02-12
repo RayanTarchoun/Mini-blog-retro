@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }} - NES Blog{% endblock %}
+
+{% block body %}
+    {# ===== ARTICLE ===== #}
+    <div class="nes-container with-title" style="margin-bottom: 24px;">
+        <p class="title">{{ post.title }}</p>
+
+        {% if post.picture %}
+            <img src="{{ post.picture }}" alt="{{ post.title }}"
+                 style="width: 100%; max-height: 400px; object-fit: cover; border: 4px solid #f8f9fa; margin-bottom: 16px;">
+        {% endif %}
+
+        <div class="post-meta" style="margin-bottom: 16px;">
+            <i class="nes-icon coin is-small"></i>
+            {{ post.category.name }} &bull;
+            Publié le {{ post.publishedAt|date('d/m/Y à H:i') }} &bull;
+            Par <strong style="color: #92cc41;">{{ post.author.fullName }}</strong>
+        </div>
+
+        <div style="font-size: 11px; line-height: 2.2; white-space: pre-line;">
+            {{ post.content }}
+        </div>
+
+        {# Actions admin #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div style="margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 2px solid #4a4a5e; padding-top: 16px;">
+                <a href="{{ path('app_post_edit', {id: post.id}) }}" class="nes-btn is-warning">
+                    Modifier
+                </a>
+                <form method="post" action="{{ path('app_post_delete', {id: post.id}) }}"
+                      onsubmit="return confirm('Supprimer cet article ?');"
+                      style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                    <button type="submit" class="nes-btn is-error">Supprimer</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ===== COMMENTAIRES ===== #}
+    <div class="nes-container with-title" style="margin-bottom: 24px;">
+        <p class="title">
+            Commentaires ({{ post.approvedComments|length }})
+        </p>
+
+        {% if post.approvedComments is empty %}
+            <p style="font-size: 10px; text-align: center; padding: 16px;">
+                <i class="nes-icon comment is-small"></i>
+                Aucun commentaire pour le moment. Soyez le premier !
+            </p>
+        {% else %}
+            {% for comment in post.approvedComments %}
+                <div class="comment-item">
+                    <div class="comment-meta">
+                        <i class="nes-icon heart is-small"></i>
+                        <strong style="color: #92cc41;">{{ comment.author.fullName }}</strong>
+                        &bull; {{ comment.createdAt|date('d/m/Y à H:i') }}
+                    </div>
+                    <div class="comment-content">
+                        {{ comment.content }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {# ===== FORMULAIRE COMMENTAIRE ===== #}
+    {% if app.user %}
+        <div class="nes-container is-dark with-title">
+            <p class="title">Ajouter un commentaire</p>
+            {{ form_start(commentForm) }}
+                <div class="form-group">
+                    {{ form_label(commentForm.content) }}
+                    {{ form_widget(commentForm.content) }}
+                    {{ form_errors(commentForm.content) }}
+                </div>
+                <button type="submit" class="nes-btn is-success">
+                    <i class="nes-icon comment is-small"></i> Commenter
+                </button>
+            {{ form_end(commentForm) }}
+        </div>
+    {% else %}
+        <div class="nes-container is-dark" style="text-align: center; padding: 24px;">
+            <p style="font-size: 10px; margin-bottom: 12px;">
+                Connectez-vous pour laisser un commentaire !
+            </p>
+            <a href="{{ path('app_login') }}" class="nes-btn is-primary">Se connecter</a>
+            <a href="{{ path('app_register') }}" class="nes-btn is-success" style="margin-left: 8px;">S'inscrire</a>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 24px;">
+        <a href="{{ path('app_post_index') }}" class="nes-btn">
+            &larr; Retour aux articles
+        </a>
+    </div>
+{% endblock %}

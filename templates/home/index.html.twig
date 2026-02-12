@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}NES Blog - Accueil{% endblock %}
+
+{% block body %}
+    {# ===== HERO SECTION ===== #}
+    <div class="nes-container is-dark with-title" style="margin-bottom: 32px; text-align: center;">
+        <p class="title">Bienvenue !</p>
+        <p style="font-size: 12px; line-height: 2; margin-bottom: 16px;">
+            <i class="nes-icon star is-medium"></i>
+        </p>
+        <p style="font-size: 11px; line-height: 2;">
+            Bienvenue sur le NES Blog !<br>
+            Explorez nos articles, laissez des commentaires<br>
+            et rejoignez la communauté.
+        </p>
+        <div style="margin-top: 20px;">
+            <a href="{{ path('app_post_index') }}" class="nes-btn is-primary">
+                Voir les articles
+            </a>
+            {% if not app.user %}
+                <a href="{{ path('app_register') }}" class="nes-btn is-success" style="margin-left: 8px;">
+                    S'inscrire
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ===== CATÉGORIES ===== #}
+    {% if categories is not empty %}
+        <div class="nes-container with-title" style="margin-bottom: 32px;">
+            <p class="title">Catégories</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                {% for category in categories %}
+                    <a href="{{ path('app_post_index', {category: category.id}) }}" class="nes-btn is-warning" style="font-size: 9px;">
+                        {{ category.name }}
+                        <span style="font-size: 7px;">({{ category.posts|length }})</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# ===== DERNIERS ARTICLES ===== #}
+    <div class="nes-container with-title" style="margin-bottom: 32px;">
+        <p class="title">Derniers articles</p>
+
+        {% if latestPosts is empty %}
+            <div style="text-align: center; padding: 32px;">
+                <i class="nes-icon is-large heart is-empty"></i>
+                <p style="margin-top: 16px; font-size: 10px;">Aucun article pour le moment...</p>
+            </div>
+        {% else %}
+            <div class="posts-grid">
+                {% for post in latestPosts %}
+                    <div class="nes-container is-dark post-card">
+                        {% if post.picture %}
+                            <img src="{{ post.picture }}" alt="{{ post.title }}">
+                        {% endif %}
+
+                        <p class="post-title">{{ post.title }}</p>
+
+                        <p class="post-meta">
+                            <i class="nes-icon coin is-small"></i>
+                            {{ post.category.name }} &bull;
+                            {{ post.publishedAt|date('d/m/Y') }} &bull;
+                            Par {{ post.author.firstName }}
+                        </p>
+
+                        <p class="post-excerpt">
+                            {{ post.content|slice(0, 120) }}{% if post.content|length > 120 %}...{% endif %}
+                        </p>
+
+                        <div style="margin-top: 12px;">
+                            <a href="{{ path('app_post_show', {id: post.id}) }}" class="nes-btn is-primary" style="font-size: 9px;">
+                                Lire la suite
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ===== SECTION ABOUT ===== #}
+    <div class="nes-container is-dark with-title">
+        <p class="title">À propos</p>
+        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <i class="nes-ash" style="transform: scale(1.0);"></i>
+            <div>
+                <p style="font-size: 10px; line-height: 2;">
+                    Ce blog a été créé avec Symfony et le thème NES.css<br>
+                    pour un style rétro pixel art unique.<br>
+                    Projet réalisé dans le cadre de la formation IPSSI.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

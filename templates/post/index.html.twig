@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles - NES Blog{% endblock %}
+
+{% block body %}
+    <div class="nes-container with-title" style="margin-bottom: 24px;">
+        <p class="title">Articles</p>
+
+        {# Filtres par catégorie #}
+        <div class="category-filter">
+            <a href="{{ path('app_post_index') }}"
+               class="nes-btn {{ currentCategory is null ? 'is-primary' : '' }}"
+               style="font-size: 8px;">
+                Tous
+            </a>
+            {% for category in categories %}
+                <a href="{{ path('app_post_index', {category: category.id}) }}"
+                   class="nes-btn {{ currentCategory == category.id ? 'is-primary' : 'is-warning' }}"
+                   style="font-size: 8px;">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div style="margin-bottom: 20px;">
+                <a href="{{ path('app_post_new') }}" class="nes-btn is-success">
+                    + Nouvel article
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if posts is empty %}
+        <div class="nes-container is-dark" style="text-align: center; padding: 48px;">
+            <i class="nes-icon is-large heart is-empty"></i>
+            <p style="margin-top: 16px;">Aucun article trouvé.</p>
+        </div>
+    {% else %}
+        <div class="posts-grid">
+            {% for post in posts %}
+                <div class="nes-container is-dark post-card">
+                    {% if post.picture %}
+                        <img src="{{ post.picture }}" alt="{{ post.title }}">
+                    {% endif %}
+
+                    <p class="post-title">{{ post.title }}</p>
+
+                    <p class="post-meta">
+                        <i class="nes-icon coin is-small"></i>
+                        {{ post.category.name }} &bull;
+                        {{ post.publishedAt|date('d/m/Y') }} &bull;
+                        <i class="nes-icon comment is-small"></i> {{ post.comments|length }}
+                    </p>
+
+                    <p class="post-excerpt">
+                        {{ post.content|slice(0, 150) }}{% if post.content|length > 150 %}...{% endif %}
+                    </p>
+
+                    <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a href="{{ path('app_post_show', {id: post.id}) }}" class="nes-btn is-primary" style="font-size: 9px;">
+                            Lire
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_post_edit', {id: post.id}) }}" class="nes-btn is-warning" style="font-size: 9px;">
+                                Modifier
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
