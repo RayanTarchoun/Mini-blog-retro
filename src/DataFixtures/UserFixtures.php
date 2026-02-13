@@ -4,10 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements FixtureGroupInterface
 {
     public const ADMIN_REFERENCE = 'admin-user';
     public const USER_REFERENCE = 'test-user';
@@ -18,7 +19,6 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // ===== ADMIN =====
         $admin = new User();
         $admin->setEmail('admin@blog.com');
         $admin->setFirstName('Admin');
@@ -29,7 +29,6 @@ class UserFixtures extends Fixture
         $admin->setCreatedAt(new \DateTime());
         $manager->persist($admin);
 
-        // ===== UTILISATEUR TEST =====
         $user = new User();
         $user->setEmail('user@blog.com');
         $user->setFirstName('Jean');
@@ -42,8 +41,12 @@ class UserFixtures extends Fixture
 
         $manager->flush();
 
-        // Références pour les autres fixtures
         $this->addReference(self::ADMIN_REFERENCE, $admin);
         $this->addReference(self::USER_REFERENCE, $user);
+    }
+
+    public static function getGroups(): array
+    {
+        return ['users'];
     }
 }

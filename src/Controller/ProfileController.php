@@ -30,7 +30,9 @@ class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setUpdatedAt(new \DateTime());
+            if (method_exists($user, 'setUpdatedAt')) {
+                $user->setUpdatedAt(new \DateTime());
+            }
             $entityManager->flush();
 
             $this->addFlash('success', 'Profil mis à jour !');

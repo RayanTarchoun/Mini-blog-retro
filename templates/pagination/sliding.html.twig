@@ -1,0 +1,32 @@
+{% if pageCount > 1 %}
+<nav style="display: flex; justify-content: center; gap: 6px; margin-top: 24px; flex-wrap: wrap; align-items: center;">
+    {# Précédent #}
+    {% if current > 1 %}
+        <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="nes-btn is-primary" style="font-size: 8px; padding: 4px 8px;">
+            &larr;
+        </a>
+    {% else %}
+        <span class="nes-btn is-disabled" style="font-size: 8px; padding: 4px 8px;">&larr;</span>
+    {% endif %}
+
+    {# Pages #}
+    {% for page in pagesInRange %}
+        {% if page != current %}
+            <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="nes-btn" style="font-size: 8px; padding: 4px 10px;">
+                {{ page }}
+            </a>
+        {% else %}
+            <span class="nes-btn is-warning" style="font-size: 8px; padding: 4px 10px;">{{ page }}</span>
+        {% endif %}
+    {% endfor %}
+
+    {# Suivant #}
+    {% if current < pageCount %}
+        <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="nes-btn is-primary" style="font-size: 8px; padding: 4px 8px;">
+            &rarr;
+        </a>
+    {% else %}
+        <span class="nes-btn is-disabled" style="font-size: 8px; padding: 4px 8px;">&rarr;</span>
+    {% endif %}
+</nav>
+{% endif %}

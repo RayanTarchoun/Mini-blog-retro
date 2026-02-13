@@ -52,6 +52,12 @@ class AdminController extends AbstractController
     public function toggleUser(User $user, EntityManagerInterface $entityManager, Request $request): Response
     {
         if ($this->isCsrfTokenValid('toggle' . $user->getId(), $request->request->get('_token'))) {
+            // Empêcher de désactiver l'admin principal (id = 15)
+            if ($user->getId() === 15) {
+                $this->addFlash('error', 'Impossible de modifier le compte administrateur principal.');
+                return $this->redirectToRoute('app_admin_users');
+            }
+
             $user->setIsActive(!$user->isActive());
             $user->setUpdatedAt(new \DateTime());
             $entityManager->flush();
@@ -67,6 +73,18 @@ class AdminController extends AbstractController
     public function promoteUser(User $user, EntityManagerInterface $entityManager, Request $request): Response
     {
         if ($this->isCsrfTokenValid('promote' . $user->getId(), $request->request->get('_token'))) {
+            // Empêcher de rétrograder l'admin principal (id = 15)
+            if ($user->getId() === 15) {
+                $this->addFlash('error', 'Impossible de rétrograder l\'administrateur principal.');
+                return $this->redirectToRoute('app_admin_users');
+            }
+
+            // Empêcher un admin de se rétrograder lui-même
+            if ($user === $this->getUser() && in_array('ROLE_ADMIN', $user->getRoles())) {
+                $this->addFlash('error', 'Vous ne pouvez pas vous rétrograder vous-même.');
+                return $this->redirectToRoute('app_admin_users');
+            }
+
             if (in_array('ROLE_ADMIN', $user->getRoles())) {
                 $user->setRoles(['ROLE_USER']);
                 $this->addFlash('success', "{$user->getFullName()} n'est plus administrateur.");

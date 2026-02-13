@@ -14,20 +14,34 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/post')]
 class PostController extends AbstractController
 {
+
     #[Route('/', name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository, CategoryRepository $categoryRepository, Request $request): Response
+    public function index(PostRepository $postRepository, CategoryRepository $categoryRepository, Request $request, PaginatorInterface $paginator): Response
     {
         $categoryId = $request->query->get('category');
         
         if ($categoryId) {
-            $posts = $postRepository->findByCategory($categoryId);
+            $query = $postRepository->createQueryBuilder('p')
+                ->andWhere('p.category = :cat')
+                ->setParameter('cat', $categoryId)
+                ->orderBy('p.publishedAt', 'DESC')
+                ->getQuery();
         } else {
-            $posts = $postRepository->findBy([], ['publishedAt' => 'DESC']);
+            $query = $postRepository->createQueryBuilder('p')
+                ->orderBy('p.publishedAt', 'DESC')
+                ->getQuery();
         }
+
+        $posts = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            6 // articles par page
+        );
 
         return $this->render('post/index.html.twig', [
             'posts' => $posts,

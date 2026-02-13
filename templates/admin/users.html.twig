@@ -48,7 +48,10 @@
                                 </td>
                                 <td>{{ user.createdAt|date('d/m/Y') }}</td>
                                 <td>
-                                    <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    {% if user.id == 15 %}
+                                        <span style="font-size: 7px; color: #f7d51d;">★ Protégé</span>
+                                    {% else %}
                                         {# Toggle active/inactive #}
                                         <form method="post" action="{{ path('app_admin_user_toggle', {id: user.id}) }}" style="display:inline;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
@@ -63,21 +66,24 @@
                                             {% endif %}
                                         </form>
 
-                                        {# Promote/demote #}
-                                        <form method="post" action="{{ path('app_admin_user_promote', {id: user.id}) }}" style="display:inline;">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('promote' ~ user.id) }}">
-                                            {% if 'ROLE_ADMIN' in user.roles %}
-                                                <button class="nes-btn is-warning" style="font-size: 7px; padding: 4px 6px;">
-                                                    Rétrograder
-                                                </button>
-                                            {% else %}
-                                                <button class="nes-btn is-primary" style="font-size: 7px; padding: 4px 6px;">
-                                                    Promouvoir
-                                                </button>
-                                            {% endif %}
-                                        </form>
-                                    </div>
-                                </td>
+                                        {# Promote/demote - pas pour soi-même si admin #}
+                                        {% if user != app.user or 'ROLE_ADMIN' not in user.roles %}
+                                            <form method="post" action="{{ path('app_admin_user_promote', {id: user.id}) }}" style="display:inline;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('promote' ~ user.id) }}">
+                                                {% if 'ROLE_ADMIN' in user.roles %}
+                                                    <button class="nes-btn is-warning" style="font-size: 7px; padding: 4px 6px;">
+                                                        Rétrograder
+                                                    </button>
+                                                {% else %}
+                                                    <button class="nes-btn is-primary" style="font-size: 7px; padding: 4px 6px;">
+                                                        Promouvoir
+                                                    </button>
+                                                {% endif %}
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
                             </tr>
                         {% endfor %}
                     </tbody>
