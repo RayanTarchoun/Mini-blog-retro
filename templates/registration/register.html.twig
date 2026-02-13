@@ -25,9 +25,12 @@
                 </div>
 
                 <div class="form-group">
-                    {{ form_label(registrationForm.email) }}
-                    {{ form_widget(registrationForm.email) }}
-                    {{ form_errors(registrationForm.email) }}
+                    {{ form_label(registrationForm.profilePicture) }}
+                    {{ form_widget(registrationForm.profilePicture) }}
+                    {{ form_errors(registrationForm.profilePicture) }}
+                    <p style="font-size: 7px; color: #adb5bd; margin-top: 4px;">
+                        Optionnel — URL d'une image (ex: imgur, gravatar...)
+                    </p>
                 </div>
 
                 <div class="form-group">

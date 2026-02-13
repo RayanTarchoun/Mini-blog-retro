@@ -6,7 +6,22 @@
     <div style="max-width: 600px; margin: 0 auto;">
         <div class="nes-container with-title" style="margin-bottom: 24px;">
             <p class="title">Mon Profil</p>
-
+                <div style="text-align: center; margin-bottom: 20px;">
+                    {% if user.profilePicture %}
+                        <img src="{{ user.profilePicture }}" alt="Photo de profil"
+                            style="width: 56px; height: 56px; object-fit: cover; border: 3px solid #92cc41;">
+                    {% else %}
+                        <div style="text-align: center; margin-bottom: 20px;">
+                        {% if user.profilePicture %}
+                            <img src="{{ user.profilePicture }}" alt="Photo de profil"
+                                style="width: 56px; height: 56px; object-fit: cover; border: 3px solid #92cc41;">
+                        {% else %}
+                            <img src="https://img.freepik.com/vecteurs-premium/pixel-art_975163-14.jpg" alt="Photo de profil par défaut"
+                                style="width: 56px; height: 56px; object-fit: cover; border: 3px solid #92cc41;">
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
             <table class="admin-table">
                 <tr>
                     <td style="color: #92cc41;">Prénom</td>
